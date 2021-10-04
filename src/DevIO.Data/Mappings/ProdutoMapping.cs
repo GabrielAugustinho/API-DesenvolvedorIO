@@ -8,7 +8,7 @@ namespace DevIO.Data.Mappings
     {
         public void Configure(EntityTypeBuilder<Produto> builder)
         {
-            builder.HasKey(p => p.Id);
+            builder.HasKey(keyExpression: p => p.Id);
 
             builder.Property(p => p.Nome)
                 .IsRequired()

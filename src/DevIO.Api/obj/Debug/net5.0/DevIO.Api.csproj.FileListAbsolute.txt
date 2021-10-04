@@ -44,3 +44,6 @@ C:\Users\DEV02\Desktop\GabrielAugustinho\MinhaAPICompleta\src\DevIO.Api\obj\Debu
 C:\Users\DEV02\Desktop\GabrielAugustinho\MinhaAPICompleta\src\DevIO.Api\obj\Debug\net5.0\ref\DevIO.Api.dll
 C:\Users\DEV02\Desktop\GabrielAugustinho\MinhaAPICompleta\src\DevIO.Api\obj\Debug\net5.0\DevIO.Api.pdb
 C:\Users\DEV02\Desktop\GabrielAugustinho\MinhaAPICompleta\src\DevIO.Api\obj\Debug\net5.0\DevIO.Api.genruntimeconfig.cache
+C:\Users\DEV02\Desktop\GabrielAugustinho\MinhaAPICompleta\src\DevIO.Api\bin\Debug\net5.0\AutoMapper.dll
+C:\Users\DEV02\Desktop\GabrielAugustinho\MinhaAPICompleta\src\DevIO.Api\bin\Debug\net5.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\DEV02\Desktop\GabrielAugustinho\MinhaAPICompleta\src\DevIO.Api\bin\Debug\net5.0\EntityFramework.dll

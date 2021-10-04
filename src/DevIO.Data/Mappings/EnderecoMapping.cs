@@ -8,7 +8,7 @@ namespace DevIO.Data.Mappings
     {
         public void Configure(EntityTypeBuilder<Endereco> builder)
         {
-            builder.HasKey(p => p.Id);
+            builder.HasKey(keyExpression: p => p.Id);
 
             builder.Property(c => c.Logradouro)
                 .IsRequired()
