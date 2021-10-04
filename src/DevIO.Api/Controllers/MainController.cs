@@ -1,14 +1,64 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using DevIO.Business.Intefaces;
+using DevIO.Business.Notificacoes;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Linq;
 
 namespace DevIO.Api.Controllers
 {
     [ApiController]
     public abstract class MainController : ControllerBase
     {
-        // Validação de notificações de erro
+        private readonly INotificador _notificador;
 
-        // Validação de modelstate
+        protected MainController(INotificador notificador)
+        {
+            _notificador = notificador;
+        }
 
-        // Validação de operação de negócios
+        protected bool OperacaoValida()
+        {
+            return !_notificador.TemNotificacao();
+        }
+
+        protected ActionResult CustomResponse(object result = null)
+        {
+            if (OperacaoValida())
+            {
+                return Ok(value: new
+                {
+                    success = true,
+                    data = result
+                });
+            }
+
+            return BadRequest(error: new
+            {
+                success = false,
+                errors = _notificador.ObterNotificacoes().Select(n => n.Mensagem)
+            });
+        }
+
+        protected ActionResult CustomResponse(ModelStateDictionary modelState)
+        {
+            if (!modelState.IsValid) NotificarErroModelInvalida(modelState);
+            return CustomResponse();
+        }
+
+        protected void NotificarErroModelInvalida(ModelStateDictionary modelState)
+        {
+            var errors = modelState.Values.SelectMany(e => e.Errors);
+            foreach (var erro in errors)
+            {
+                var erroMsg = erro.Exception == null ? erro.ErrorMessage : erro.Exception.Message;
+
+                NotificarErro(erroMsg);
+            }
+        }
+
+        protected void NotificarErro(string mesagem)
+        {
+            _notificador.Handle(new Notificacao(mesagem));
+        }
     }
 }

@@ -19,25 +19,28 @@ namespace DevIO.Business.Services
             _user = user;
         }
 
-        public async Task Adicionar(Produto produto)
+        public async Task<bool> Adicionar(Produto produto)
         {
-            if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
+            if (!ExecutarValidacao(new ProdutoValidation(), produto)) return false;
 
             //var user = _user.GetUserId();
 
             await _produtoRepository.Adicionar(produto);
+            return true;
         }
 
-        public async Task Atualizar(Produto produto)
+        public async Task<bool> Atualizar(Produto produto)
         {
-            if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
+            if (!ExecutarValidacao(new ProdutoValidation(), produto)) return false;
 
             await _produtoRepository.Atualizar(produto);
+            return true;
         }
 
-        public async Task Remover(Guid id)
+        public async Task<bool> Remover(Guid id)
         {
             await _produtoRepository.Remover(id);
+            return true;
         }
 
         public void Dispose()
