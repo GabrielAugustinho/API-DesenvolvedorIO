@@ -1,9 +1,13 @@
-﻿using System;
+﻿using DevIO.Api.Extensions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace DevIO.Api.ViewModels
-{    
-    public class ProdutoViewModel
+{
+    [ModelBinder(typeof(JsonWithFilesFormDataModelBinder), Name = "produto")]
+    public class ProdutoImagemViewModel
     {
         [Key]
         public Guid Id { get; set; }
@@ -19,10 +23,10 @@ namespace DevIO.Api.ViewModels
         [StringLength(1000, ErrorMessage = "O campo {0} precisa ter entr {2} e {1} caracteres"), MinLength(2)]
         public string Descricao { get; set; }
 
-        // Seta o nome da imagem
+        // Seta o nome da imagem.
         public string Imagem { get; set; }
-        // Dado da imagem
-        public string ImagemUpload { get; set; }
+        // Dado da imagem enviando informações repartidas.
+        public IFormFile ImagemUpload { get; set; }
 
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         public decimal Valor { get; set; }
