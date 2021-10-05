@@ -76,16 +76,16 @@ namespace DevIO.Api.Controllers
 
          // Método de transformação de imagens para o banco de dados
          private bool UploadArquivos(string arquivo, string imgNome)
-        {
-            var imageDataByteArray = Convert.FromBase64String(arquivo);
-
+        {      
             if(string.IsNullOrEmpty(arquivo))
             {
                 NotificarErro(mesagem: "Forneça uma imagem para este produto!");
                 return false;
             }
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/imagens", imgNome);
+            var imageDataByteArray = Convert.FromBase64String(arquivo);
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/app/demo-webapi/src/assets", imgNome);
 
             if (System.IO.File.Exists(filePath))
             {

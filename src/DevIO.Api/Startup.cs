@@ -39,6 +39,15 @@ namespace DevIO.Api
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+
+            services.AddCors(options => 
+            {
+                options.AddPolicy(
+                    name: "Developement",
+                    configurePolicy: builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials()
+                );
+            });
+
             services.ResolveDependencies();
         }
 
@@ -54,7 +63,9 @@ namespace DevIO.Api
                 app.UseHsts();
             }
 
+            app.UseCors("Developement");
             app.UseHttpsRedirection();
+
             app.UseRouting();
             app.UseAuthorization();
 
