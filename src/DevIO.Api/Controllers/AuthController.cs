@@ -22,9 +22,10 @@ namespace DevIO.Api.Controllers
         private readonly AppSettings _appSettings;
 
         public AuthController(INotificador notificador,
-               SignInManager<IdentityUser> signInManager,
-               UserManager<IdentityUser> userManager,
-               IOptions<AppSettings> appSettings) : base(notificador)
+                              SignInManager<IdentityUser> signInManager,
+                              UserManager<IdentityUser> userManager,
+                              IOptions<AppSettings> appSettings,
+                              IUser user) : base(notificador, user)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -114,6 +115,7 @@ namespace DevIO.Api.Controllers
 
             var encodedToken = tokenHandle.WriteToken(token);
 
+            // Como aparecerá o token para a requisição no front.
             var response = new LoginResponseViewModel
             {
                 AccessToken = encodedToken,
