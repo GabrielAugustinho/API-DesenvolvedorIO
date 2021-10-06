@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DevIO.Api.Controllers;
 using DevIO.Api.Extensions;
 using DevIO.Api.ViewModels;
 using DevIO.Business.Intefaces;
@@ -11,10 +12,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace DevIO.Api.Controllers
+namespace DevIO.Api.v1.Controllers
 {
     [Authorize]
-    [Route("api/produtos")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/produtos")]
     public class ProdutosController : MainController
     {
         private readonly IProdutoRepository _produtoRepository;
@@ -56,7 +58,7 @@ namespace DevIO.Api.Controllers
 
             var imagemNome = Guid.NewGuid() + "_" + produtoViewModel.Imagem;
 
-            if(!UploadArquivos(produtoViewModel.ImagemUpload, imagemNome))
+            if (!UploadArquivos(produtoViewModel.ImagemUpload, imagemNome))
             {
                 return CustomResponse(produtoViewModel);
             }
@@ -101,10 +103,10 @@ namespace DevIO.Api.Controllers
 
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            if(produtoViewModel.ImagemUpload != null)
+            if (produtoViewModel.ImagemUpload != null)
             {
                 var imagemNome = Guid.NewGuid() + "_" + produtoViewModel.Imagem;
-                if(!UploadArquivos(produtoViewModel.ImagemUpload, imagemNome))
+                if (!UploadArquivos(produtoViewModel.ImagemUpload, imagemNome))
                 {
                     return CustomResponse(ModelState);
                 }
@@ -144,10 +146,10 @@ namespace DevIO.Api.Controllers
         }
 
 
-         // Método de transformação de imagens para o banco de dados
-         private bool UploadArquivos(string arquivo, string imgNome)
-        {      
-            if(string.IsNullOrEmpty(arquivo))
+        // Método de transformação de imagens para o banco de dados
+        private bool UploadArquivos(string arquivo, string imgNome)
+        {
+            if (string.IsNullOrEmpty(arquivo))
             {
                 NotificarErro(mesagem: "Forneça uma imagem para este produto!");
                 return false;
@@ -170,7 +172,7 @@ namespace DevIO.Api.Controllers
 
         private async Task<bool> UploadArquivoAlternativo(IFormFile arquivo, string imgPrefixo)
         {
-            if(arquivo == null || arquivo.Length == 0)
+            if (arquivo == null || arquivo.Length == 0)
             {
                 NotificarErro(mesagem: "Forneça uma imagem para este produto!");
                 return false;
