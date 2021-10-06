@@ -40,10 +40,12 @@ namespace DevIO.Api
         {
             if (env.IsDevelopment())
             {
+                app.UseCors("Developement");
                 app.UseDeveloperExceptionPage();
             }
             else
             {
+                app.UseCors("Production");
                 app.UseHsts();
             }
 
