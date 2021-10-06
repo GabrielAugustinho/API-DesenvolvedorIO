@@ -12,21 +12,15 @@ namespace DevIO.Api.Configuration
 {
     public static class IdentityConfig
     {
-        public static IServiceCollection AddIdentityConfiguration(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddIdentityConfig(this IServiceCollection services,
+            IConfiguration configuration)
         {
             // Connections
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
             
-            services.AddDbContext<ApplicationDbContext>(optionsAction: options =>
-                options.UseSqlServer(configuration.GetConnectionString(name: "DefaultConnection")));
-
-            // Identity
-
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddRoles<IdentityRole>()
-                .AddEntityFrameworkStore<ApplicationDbContext>()
-                .AddErrorDescriber<IdentityMensagensPortugues>()
-                .AddDefaultTokenProviders();
-
             // JWT
 
             var appSettingsSection = configuration.GetSection(key: "AppSettings");
