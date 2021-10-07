@@ -23,7 +23,7 @@ namespace DevIO.Api
                 .AddJsonFile($"appsettings.{hostEnvironment.EnvironmentName}.json", true, true)
                 .AddEnvironmentVariables();
 
-            if (hostEnvironment.IsDevelopment())
+            if (hostEnvironment.IsProduction())
             {
                 builder.AddUserSecrets<Startup>();
             }
@@ -61,3 +61,4 @@ namespace DevIO.Api
         }
     }
 }
+ 
