@@ -52,9 +52,7 @@ namespace DevIO.Api.Configuration
                             .SetIsOriginAllowedToAllowWildcardSubdomains()
                             //.WithHeaders(HeaderNames.ContentType, "x-custom-header")
                             .AllowAnyHeader());
-            });
-
-            services.AddHealthChecksUI();
+            });            
 
             return services;
         }
@@ -81,27 +79,7 @@ namespace DevIO.Api.Configuration
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseStaticFiles();
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapHealthChecks("/api/hc", new HealthCheckOptions()
-                {
-                    Predicate = _ => true,
-                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-                });
-                endpoints.MapHealthChecksUI(options =>
-                {
-                    options.UIPath = "/api/hc-ui";
-                    options.ResourcesPath = "/api/hc-ui-resources";
-
-                    options.UseRelativeApiPath = false;
-                    options.UseRelativeResourcesPath = false;
-                    options.UseRelativeWebhookPath = false;
-                });
-
-            });
+            app.UseStaticFiles();            
 
             return app;
         }
