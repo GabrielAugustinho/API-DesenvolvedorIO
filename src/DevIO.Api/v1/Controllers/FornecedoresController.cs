@@ -39,8 +39,7 @@ namespace DevIO.Api.v1.Controllers
         [HttpGet]
         public async Task<IEnumerable<FornecedorViewModel>> ObterTodos()
         {
-            var fornecedor = _mapper.Map<IEnumerable<FornecedorViewModel>>(await _fornecedorRepository.ObterTodos());
-            return fornecedor;
+            return _mapper.Map<IEnumerable<FornecedorViewModel>>(await _fornecedorRepository.ObterTodos());
         }
 
         [HttpGet("{id:guid}")]
@@ -85,13 +84,13 @@ namespace DevIO.Api.v1.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<FornecedorViewModel>> Excluir(Guid id)
         {
-            var fornecedor = await ObterFornecedorEndereco(id);
+            var fornecedorViewModel = await ObterFornecedorEndereco(id);
 
-            if (fornecedor == null) return NotFound();
+            if (fornecedorViewModel == null) return NotFound();
 
             await _fornecedorService.Remover(id);
 
-            return CustomResponse();
+            return CustomResponse(fornecedorViewModel);
         }
 
         [HttpGet("obter-endereco/{id:guid}")]

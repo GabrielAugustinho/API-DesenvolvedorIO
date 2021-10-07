@@ -58,7 +58,7 @@ namespace DevIO.Api.v1.Controllers
 
             var imagemNome = Guid.NewGuid() + "_" + produtoViewModel.Imagem;
 
-            if (!UploadArquivos(produtoViewModel.ImagemUpload, imagemNome))
+            if (!UploadArquivo(produtoViewModel.ImagemUpload, imagemNome))
             {
                 return CustomResponse(produtoViewModel);
             }
@@ -67,26 +67,7 @@ namespace DevIO.Api.v1.Controllers
             await _produtoService.Adicionar(_mapper.Map<Produto>(produtoViewModel));
 
             return CustomResponse(produtoViewModel);
-        }
-
-        [ClaimsAuthorize("Produto", "Adicionar")]
-        [HttpPost("Adicionar")]
-        public async Task<ActionResult<ProdutoViewModel>> AdicionarAlternativo(ProdutoImagemViewModel produtoViewModel)
-        {
-            if (!ModelState.IsValid) return CustomResponse(ModelState);
-
-            var imagemPrefixo = Guid.NewGuid() + "_";
-
-            if (!await UploadArquivoAlternativo(produtoViewModel.ImagemUpload, imagemPrefixo))
-            {
-                return CustomResponse(produtoViewModel);
-            }
-
-            produtoViewModel.Imagem = imagemPrefixo + produtoViewModel.ImagemUpload.FileName;
-            await _produtoService.Adicionar(_mapper.Map<Produto>(produtoViewModel));
-
-            return CustomResponse(produtoViewModel);
-        }
+        }                
 
         [ClaimsAuthorize("Produto", "Atualizar")]
         [HttpPut("{id:guid}")]
@@ -94,19 +75,21 @@ namespace DevIO.Api.v1.Controllers
         {
             if (id != produtoViewModel.Id)
             {
-                NotificarErro(mesagem: "Os ids informados não são iguais");
+                NotificarErro("Os ids informados não são iguais!");
                 return CustomResponse();
             }
 
             var produtoAtualizacao = await ObterProduto(id);
-            produtoViewModel.Imagem = produtoAtualizacao.Imagem;
+
+            if (string.IsNullOrEmpty(produtoViewModel.Imagem))
+                produtoViewModel.Imagem = produtoAtualizacao.Imagem;
 
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
             if (produtoViewModel.ImagemUpload != null)
             {
                 var imagemNome = Guid.NewGuid() + "_" + produtoViewModel.Imagem;
-                if (!UploadArquivos(produtoViewModel.ImagemUpload, imagemNome))
+                if (!UploadArquivo(produtoViewModel.ImagemUpload, imagemNome))
                 {
                     return CustomResponse(ModelState);
                 }
@@ -114,6 +97,7 @@ namespace DevIO.Api.v1.Controllers
                 produtoAtualizacao.Imagem = imagemNome;
             }
 
+            produtoAtualizacao.FornecedorId = produtoViewModel.FornecedorId;
             produtoAtualizacao.Nome = produtoViewModel.Nome;
             produtoAtualizacao.Descricao = produtoViewModel.Descricao;
             produtoAtualizacao.Valor = produtoViewModel.Valor;
@@ -124,30 +108,8 @@ namespace DevIO.Api.v1.Controllers
             return CustomResponse(produtoViewModel);
         }
 
-        // Tamanho de imagem limitada por 40 megas
-        [RequestSizeLimit(40000000)]
-        [HttpPost("imagem")]
-        public async Task<ActionResult<ProdutoViewModel>> AdicionarImagem(IFormFile file)
-        {
-            return Ok(file);
-        }
-
-        [ClaimsAuthorize("Produto", "Excluir")]
-        [HttpDelete("{id:guid}")]
-        public async Task<ActionResult<ProdutoViewModel>> Excluir(Guid id)
-        {
-            var produto = await ObterProduto(id);
-
-            if (produto == null) return NotFound();
-
-            await _produtoService.Remover(id);
-
-            return CustomResponse(produto);
-        }
-
-
         // Método de transformação de imagens para o banco de dados
-        private bool UploadArquivos(string arquivo, string imgNome)
+        private bool UploadArquivo(string arquivo, string imgNome)
         {
             if (string.IsNullOrEmpty(arquivo))
             {
@@ -170,19 +132,48 @@ namespace DevIO.Api.v1.Controllers
             return true;
         }
 
+        #region UploadAlternativo
+
+        [ClaimsAuthorize("Produto", "Adicionar")]
+        [HttpPost("Adicionar")]
+        public async Task<ActionResult<ProdutoViewModel>> AdicionarAlternativo(ProdutoImagemViewModel produtoViewModel)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            var imgPrefixo = Guid.NewGuid() + "_";
+            if (!await UploadArquivoAlternativo(produtoViewModel.ImagemUpload, imgPrefixo))
+            {
+                return CustomResponse(ModelState);
+            }
+
+            produtoViewModel.Imagem = imgPrefixo + produtoViewModel.ImagemUpload.FileName;
+            await _produtoService.Adicionar(_mapper.Map<Produto>(produtoViewModel));
+
+            return CustomResponse(produtoViewModel);
+        }
+
+        // Tamanho máximo 40 megas
+        [RequestSizeLimit(40000000)]
+        //[DisableRequestSizeLimit]
+        [HttpPost("imagem")]
+        public ActionResult AdicionarImagem(IFormFile file)
+        {
+            return Ok(file);
+        }
+
         private async Task<bool> UploadArquivoAlternativo(IFormFile arquivo, string imgPrefixo)
         {
             if (arquivo == null || arquivo.Length == 0)
             {
-                NotificarErro(mesagem: "Forneça uma imagem para este produto!");
+                NotificarErro("Forneça uma imagem para este produto!");
                 return false;
             }
 
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/app/demo-webapi/src/assets", imgPrefixo + arquivo.FileName);
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imgPrefixo + arquivo.FileName);
 
             if (System.IO.File.Exists(path))
             {
-                NotificarErro(mesagem: "Já existe um arquivo com este nome!");
+                NotificarErro("Já existe um arquivo com este nome!");
                 return false;
             }
 
@@ -193,6 +184,8 @@ namespace DevIO.Api.v1.Controllers
 
             return true;
         }
+
+        #endregion
 
         private async Task<ProdutoViewModel> ObterProduto(Guid id)
         {
