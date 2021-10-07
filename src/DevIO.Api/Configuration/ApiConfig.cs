@@ -15,8 +15,6 @@ namespace DevIO.Api.Configuration
         {
             services.AddControllers();
 
-
-            // Dados do versionamento
             services.AddApiVersioning(options =>
             {
                 options.AssumeDefaultVersionWhenUnspecified = true;
@@ -26,7 +24,6 @@ namespace DevIO.Api.Configuration
 
             services.AddVersionedApiExplorer(options =>
             {
-                // Nomenclatura de versionamento
                 options.GroupNameFormat = "'v'VVV";
                 options.SubstituteApiVersionInUrl = true;
             });
@@ -34,6 +31,7 @@ namespace DevIO.Api.Configuration
             services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
+
             });
 
             services.AddCors(options =>
@@ -45,6 +43,7 @@ namespace DevIO.Api.Configuration
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 
+
                 options.AddPolicy("Production",
                     builder =>
                         builder
@@ -53,16 +52,9 @@ namespace DevIO.Api.Configuration
                             .SetIsOriginAllowedToAllowWildcardSubdomains()
                             //.WithHeaders(HeaderNames.ContentType, "x-custom-header")
                             .AllowAnyHeader());
-
-                options.AddDefaultPolicy(
-                    builder =>
-                        builder
-                            .AllowAnyOrigin()
-                            .AllowAnyMethod()
-                            .AllowAnyHeader()
-                            .AllowCredentials()
-                );
             });
+
+            services.AddHealthChecksUI();
 
             return services;
         }
